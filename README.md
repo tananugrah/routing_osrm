@@ -1,7 +1,7 @@
 
 # Dokumentasi Proyek Server Rute OSRM Lokal
 
-Dokumen ini menjelaskan cara melakukan setup, instalasi, dan penggunaan server perutean OSRM lokal menggunakan Docker. Proyek ini dikonfigurasi untuk menghitung rute mobil (car) dan dilengkapi dengan script Python untuk memproses banyak rute dari file CSV.
+Dokumen ini menjelaskan cara melakukan setup, instalasi, dan penggunaan server perutean OSRM lokal menggunakan Docker. Proyek ini dikonfigurasi untuk menghitung rute mobil (car) dan dilengkapi dengan script Python untuk memproses banyak rute dari file CSV. Silahkan rubah sesuai kebutuhan jika ingin mengambil dari database dan mengirim atau upsert ke table database anda
 
 -----
 
