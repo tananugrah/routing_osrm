@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  osrm_processor:
+    # Direkomendasikan: Gunakan versi spesifik untuk menghindari masalah ini di masa depan
+    image: osrm/osrm-backend:latest
+    container_name: osrm_processor
+    volumes:
+      - ./osrm-data:/data
+    command: >
+      bash -c "
+      if [ ! -f /data/indonesia-latest.osrm ]; then
+        echo 'Processing OSRM data...'
+        # PERBAIKAN: Gunakan path baru yang sudah ditemukan
+        osrm-extract -p /usr/local/share/osrm/profiles/car.lua /data/indonesia-latest.osm.pbf && \
+        osrm-contract /data/indonesia-latest.osrm
+      else
+        echo 'OSRM data already processed.'
+      fi
+      "
+    healthcheck:
+      test: ["CMD", "test", "-f", "/data/indonesia-latest.osrm"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 30m
+    restart: "no"
+
+  osrm_router:
+    # Gunakan versi yang sama dengan processor
+    image: osrm/osrm-backend:latest
+    container_name: osrm_router
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./osrm-data:/data
+    # command: osrm-routed /data/indonesia-latest.osrm
+    command: osrm-routed --algorithm CH /data/indonesia-latest.osrm
+    depends_on:
+      osrm_processor:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/nearest/v1/car/106.8456,-6.2088"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+# docker compose -f docker-compose.osrm.yml down 
+# docker compose -f docker-compose.osrm.yml up --build -d
